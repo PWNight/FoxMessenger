@@ -1,0 +1,16 @@
+{
+    "name": "FoxMessenger",
+    "description": "Мессенджер для общения",
+    "version": "0.1",
+    "manifest_version": 3,
+    "icons": {
+        "64":"icons/64.png",
+        "48":"icons/48.png",
+        "32":"icons/32.png",
+        "16":"icons/16.png"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "permissions": []
+}
