@@ -1,0 +1,41 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.container{
+    height: 500px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+form{
+    width: 80%;
+    margin: auto;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: .3em;
+}
+form button, input{
+    padding: 1em;
+    font-size: 1.3em;
+}
+#cont_msgs{
+    width: 90%;
+    margin: auto;
+    height: 400px;
+    padding: 1em;
+    overflow: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+}
+.message{
+    display: flex;
+    flex-direction: column;
+    gap: .2em;
+    font-size: 1.2em;
+}

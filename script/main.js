@@ -1,9 +1,11 @@
 function gen_loginPage(){
     const container = document.getElementById('container');
+    let h1 = document.createElement('h1')
     let form = document.createElement('form');
     let inpt_login = document.createElement('input');
     let inpt_pass = document.createElement('input');
     let btn_login = document.createElement('button')
+    h1.textContent = 'Авторизация'
     inpt_login.type = 'text';
     inpt_pass.type = 'password';
     inpt_login.name = 'login';
@@ -15,6 +17,7 @@ function gen_loginPage(){
     btn_login.type = 'submit';
     btn_login.textContent = 'Авторизоваться';
     container.append(form);
+    form.append(h1)
     form.append(inpt_login);
     form.append(inpt_pass)
     form.append(btn_login);
@@ -26,6 +29,9 @@ function gen_mainPage(){
     let form = document.createElement('form');
     let input = document.createElement('input');
     let btn = document.createElement('button');
+    let btn_exit = document.createElement('button');
+    btn_exit.textContent = 'Выйти'
+    btn_exit.id = 'btn_exit'
     cont_msgs.id = 'cont_msgs';
     form.id = 'msg_form';
     input.name = 'message';
@@ -35,6 +41,7 @@ function gen_mainPage(){
     container.append(form);
     form.append(input);
     form.append(btn);
+    form.append(btn_exit)
     return form;
 }
 function apiFetch(data,url,method){
@@ -83,32 +90,29 @@ function getMessages(){
                 var innerData = data[i];
                 var from_u = innerData[0];
                 var message = innerData[1];
-                //var date = innerData['created_at']
-                cont_msgs.innerHTML += '<p>' + from_u + ': ' + message + '</p>'
+                var date = innerData[2]
+                cont_msgs.innerHTML += '<div class="message"><p>' + from_u + ': ' + message + '</p><small>'+date+'</small></div>'
             }
         }
     })
 }
-function exitHandler(){
-    apiFetch("","http://localhost/messenger/exit.php","GET")
-    .then(resultData => {
-        console.log(resultData)
-        if(resultData.status == 200){
-            window.close()
-        }
-    })
-}
-window.onbeforeunload = e => {
-    apiFetch("","http://localhost/messenger/exit.php","GET")
-    .then(resultData => {
-        console.log(resultData)
-        if(resultData.status == 200){
-            window.close()
-        }
-    })
-}
 window.onload = e => {
-    form = gen_loginPage()
+    apiFetch("","http://localhost/messenger/checkAuth.php","GET")
+    .then(resultData => {
+        console.log(resultData)
+        if(resultData.status == 200){
+            container.innerHTML = "";
+            form = gen_mainPage();
+            form.addEventListener('submit', sendHandler)
+            getMessages()
+            let btn_exit = document.getElementById('btn_exit')
+            btn_exit.addEventListener('click',exitHandler)
+            setInterval(getMessages,10000)
+        }else{
+            form = gen_loginPage()
+            form.addEventListener('submit', loginHandler)
+        }
+    })
     const loginHandler = e => {
         e.preventDefault()
         const formData = new FormData(e.target);
@@ -118,12 +122,13 @@ window.onload = e => {
         }
         apiFetch(data,"http://localhost/messenger/login.php","POST")
         .then(resultData => {
-            //console.log(resultData)
             if(resultData.status == 200){
                 container.innerHTML = "";
                 form = gen_mainPage();
                 form.addEventListener('submit', sendHandler)
                 getMessages()
+                let btn_exit = document.getElementById('btn_exit')
+                btn_exit.addEventListener('click',exitHandler)
                 setInterval(getMessages,10000)
             }
         })
@@ -142,5 +147,13 @@ window.onload = e => {
             }
         })
     }
-    form.addEventListener('submit', loginHandler)
+    const exitHandler = e =>{
+        apiFetch("","http://localhost/messenger/exit.php","GET")
+        .then(resultData => {
+            console.log(resultData)
+            if(resultData.status == 200){
+                window.close()
+            }
+        })
+    }
 }
