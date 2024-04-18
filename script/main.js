@@ -78,16 +78,32 @@ function getMessages(){
     apiFetch('',"http://localhost/messenger/getMessages.php","GET")
     .then(resultData => {
         if(resultData.status == 200){
-            var messages;
             var data = JSON.parse(resultData.body.message);
             for (var i = 0; i < data.length; i++) {
                 var innerData = data[i];
                 var from_u = innerData[0];
                 var message = innerData[1];
                 //var date = innerData['created_at']
-                messages += '<p>' + from_u + ': ' + message + '</p>';
+                cont_msgs.innerHTML += '<p>' + from_u + ': ' + message + '</p>'
             }
-            cont_msgs.innerHTML = messages
+        }
+    })
+}
+function exitHandler(){
+    apiFetch("","http://localhost/messenger/exit.php","GET")
+    .then(resultData => {
+        console.log(resultData)
+        if(resultData.status == 200){
+            window.close()
+        }
+    })
+}
+window.onbeforeunload = e => {
+    apiFetch("","http://localhost/messenger/exit.php","GET")
+    .then(resultData => {
+        console.log(resultData)
+        if(resultData.status == 200){
+            window.close()
         }
     })
 }
@@ -102,6 +118,7 @@ window.onload = e => {
         }
         apiFetch(data,"http://localhost/messenger/login.php","POST")
         .then(resultData => {
+            //console.log(resultData)
             if(resultData.status == 200){
                 container.innerHTML = "";
                 form = gen_mainPage();
@@ -115,17 +132,13 @@ window.onload = e => {
         e.preventDefault()
         const formData = new FormData(e.target);
         const data = {
-            'from_u': 'tt',
-            'content': formData.get('message')
+            'message': formData.get('message')
         }
         apiFetch(data,"http://localhost/messenger/sendMessage.php","POST")
         .then(resultData => {
+            console.log(resultData)
             if(resultData.status == 200){
-                container.innerHTML = "";
-                form = gen_mainPage();
-                form.addEventListener('submit', sendHandler)
                 getMessages()
-                setInterval(getMessages,10000)
             }
         })
     }
