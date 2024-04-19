@@ -1,10 +1,60 @@
+    //Если не будет лень и это будет иметь смысл - сделаю регистрацию позже
+    /*const registerHandler = e => {
+        e.preventDefault()
+        const formData = new FormData(e.target);
+        const data = {
+            'login': formData.get('login'),
+            'password': formData.get('password')
+        }
+        apiFetch(data,"http://localhost/messenger/registration.php","POST")
+        .then(resultData => {
+            console.log(resultData)
+            if(resultData.status == 200){
+                container.innerHTML = "";
+                form = gen_mainPage();
+                form.addEventListener('submit', sendHandler)
+                getMessages()
+                let btn_exit = document.getElementById('btn_exit')
+                btn_exit.addEventListener('click',exitHandler)
+                setInterval(getMessages,10000)
+            }
+        })
+    }
+    function gen_registerPage(){
+        const container = document.getElementById('container');
+        container.innerHTML = ""
+        let h1 = document.createElement('h1')
+        let form = document.createElement('form');
+        let inpt_login = document.createElement('input');
+        let inpt_pass = document.createElement('input');
+        let btn_login = document.createElement('button');
+        h1.textContent = 'Регистрация'
+        inpt_login.type = 'text';
+        inpt_pass.type = 'password';
+        inpt_login.name = 'login';
+        inpt_pass.name = 'password';
+        inpt_login.placeholder = 'Логин';
+        inpt_pass.placeholder = 'Пароль';
+        inpt_login.required = true;
+        inpt_pass.required = true;
+        btn_login.type = 'submit';
+        btn_login.textContent = 'Зарегистрироваться';
+        container.append(form);
+        form.append(h1)
+        form.append(inpt_login);
+        form.append(inpt_pass)
+        form.append(btn_login)
+        container.innerHTML += '<p>Уже есть аккаунт?<a id="log">Авторизуйтесь</a></p>'
+        return form;
+    }*/
 function gen_loginPage(){
     const container = document.getElementById('container');
+    container.innerHTML = ""
     let h1 = document.createElement('h1')
     let form = document.createElement('form');
     let inpt_login = document.createElement('input');
     let inpt_pass = document.createElement('input');
-    let btn_login = document.createElement('button')
+    let btn_login = document.createElement('button');
     h1.textContent = 'Авторизация'
     inpt_login.type = 'text';
     inpt_pass.type = 'password';
@@ -20,7 +70,7 @@ function gen_loginPage(){
     form.append(h1)
     form.append(inpt_login);
     form.append(inpt_pass)
-    form.append(btn_login);
+    form.append(btn_login)
     return form;
 }
 function gen_mainPage(){
@@ -97,22 +147,7 @@ function getMessages(){
     })
 }
 window.onload = e => {
-    apiFetch("","http://localhost/messenger/checkAuth.php","GET")
-    .then(resultData => {
-        console.log(resultData)
-        if(resultData.status == 200){
-            container.innerHTML = "";
-            form = gen_mainPage();
-            form.addEventListener('submit', sendHandler)
-            getMessages()
-            let btn_exit = document.getElementById('btn_exit')
-            btn_exit.addEventListener('click',exitHandler)
-            setInterval(getMessages,10000)
-        }else{
-            form = gen_loginPage()
-            form.addEventListener('submit', loginHandler)
-        }
-    })
+    e.preventDefault()
     const loginHandler = e => {
         e.preventDefault()
         const formData = new FormData(e.target);
@@ -127,9 +162,9 @@ window.onload = e => {
                 form = gen_mainPage();
                 form.addEventListener('submit', sendHandler)
                 getMessages()
+                setInterval(getMessages,10000)
                 let btn_exit = document.getElementById('btn_exit')
                 btn_exit.addEventListener('click',exitHandler)
-                setInterval(getMessages,10000)
             }
         })
     }
@@ -141,7 +176,6 @@ window.onload = e => {
         }
         apiFetch(data,"http://localhost/messenger/sendMessage.php","POST")
         .then(resultData => {
-            console.log(resultData)
             if(resultData.status == 200){
                 getMessages()
             }
@@ -150,10 +184,25 @@ window.onload = e => {
     const exitHandler = e =>{
         apiFetch("","http://localhost/messenger/exit.php","GET")
         .then(resultData => {
-            console.log(resultData)
             if(resultData.status == 200){
                 window.close()
             }
         })
     }
+
+    apiFetch("","http://localhost/messenger/checkAuth.php","GET")
+    .then(resultData => {
+        if(resultData.status == 200){
+            container.innerHTML = "";
+            form = gen_mainPage();
+            form.addEventListener('submit', sendHandler)
+            getMessages()
+            setInterval(getMessages,10000)
+            let btn_exit = document.getElementById('btn_exit')
+            btn_exit.addEventListener('click',exitHandler)
+        }else{
+            login_form = gen_loginPage()
+            login_form.addEventListener('submit', loginHandler)
+        }
+    })
 }
